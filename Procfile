@@ -1,0 +1,1 @@
+web: gunicorn gymcoach.wsgi:application
