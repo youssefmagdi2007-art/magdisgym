@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - Magdi's Gym{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container { max-width: 800px; margin: 0 auto; padding: 20px 0; }
+    .checkout-progress {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        position: relative;
+        padding: 0 10px;
+    }
+    .checkout-progress::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 40px;
+        right: 40px;
+        height: 3px;
+        background: #dee2e6;
+        z-index: 0;
+    }
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+    }
+    .progress-step .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #dee2e6;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: 3px solid #dee2e6;
+    }
+    .progress-step.active .step-number {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 5px rgba(13,110,253,0.2);
+    }
+    .progress-step.completed .step-number {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+    .progress-step .step-label {
+        margin-top: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6c757d;
+        transition: color 0.3s ease;
+    }
+    .progress-step.active .step-label,
+    .progress-step.completed .step-label {
+        color: #0d6efd;
+    }
+    .checkout-step { display: none; animation: fadeIn 0.4s ease; }
+    .checkout-step.active { display: block; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .step-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        border: 1px solid #e9ecef;
+    }
+    .step-card h3 { color: #0d6efd; font-weight: 700; margin-bottom: 5px; }
+    .step-card .step-subtitle { color: #6c757d; font-size: 0.9rem; margin-bottom: 25px; }
+    .step-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+        gap: 15px;
+    }
+    .step-actions .btn { padding: 12px 35px; border-radius: 10px; font-weight: 600; font-size: 1rem; }
+    .btn-prev { background: #f8f9fa; color: #212529; border: 2px solid #dee2e6; }
+    .btn-prev:hover { background: #e9ecef; }
+    .btn-prev:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-next { background: #0d6efd; color: white; border: none; }
+    .btn-next:hover { background: #0b5ed7; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(13,110,253,0.3); }
+    .confirmation-icon { font-size: 5rem; color: #0d6efd; animation: popIn 0.6s ease; }
+    @keyframes popIn {
+        0% { transform: scale(0); opacity: 0; }
+        80% { transform: scale(1.2); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .plan-summary { background: #f8f9fa; border-radius: 12px; padding: 15px 20px; margin-bottom: 20px; }
+    .home-btn {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 100;
+        background: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        text-decoration: none;
+    }
+    .home-btn:hover {
+        background: #0b5ed7;
+        color: white;
+    }
+    @media (max-width: 768px) {
+        .checkout-progress { padding: 0 5px; }
+        .checkout-progress::before { left: 20px; right: 20px; }
+        .progress-step .step-label { font-size: 0.65rem; }
+        .progress-step .step-number { width: 32px; height: 32px; font-size: 0.8rem; }
+        .step-card { padding: 20px; }
+        .step-actions { flex-direction: column-reverse; }
+        .step-actions .btn { width: 100%; text-align: center; }
+        .home-btn { top: 80px; right: 10px; padding: 6px 14px; font-size: 0.8rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{{ plan|json_script:"plan-data" }}
+{{ user|json_script:"user-data" }}
+{{ initial_data|json_script:"initial-data" }}
+
+<a href="{% url 'home' %}" class="home-btn"><i class="fas fa-home me-2"></i>Home</a>
+
+<div class="checkout-container">
+    <h2 class="fw-bold mb-4" style="color: #0d6efd;">Checkout</h2>
+
+    <div id="planSummary" class="plan-summary">
+        <h5 class="fw-bold mb-1">Loading plan...</h5>
+        <p class="fw-bold mb-0" style="color: #0d6efd;">Loading...</p>
+    </div>
+
+    <!-- Progress Bar (2 steps) -->
+    <div class="checkout-progress" id="checkoutProgress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <span class="step-label">Payment</span>
+        </div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <span class="step-label">Confirmation</span>
+        </div>
+    </div>
+
+    <!-- Step 1: Payment -->
+    <div class="checkout-step active" id="step1">
+        <div class="step-card">
+            <h3><i class="fas fa-credit-card me-2"></i>Payment Method</h3>
+            <p class="step-subtitle">Choose how you'd like to pay.</p>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCard" value="card" checked>
+                    <label class="form-check-label" for="paymentCard">
+                        <i class="fas fa-credit-card me-1"></i> Pay with Card
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCash" value="cash">
+                    <label class="form-check-label" for="paymentCash">
+                        <i class="fas fa-money-bill-wave me-1"></i> Cash on Delivery
+                    </label>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-next w-100" id="confirmOrderBtn">
+                <i class="fas fa-check me-2"></i> Confirm Order
+            </button>
+        </div>
+    </div>
+
+    <!-- Step 2: Confirmation -->
+    <div class="checkout-step" id="step2">
+        <div class="step-card" style="text-align: center;">
+            <div class="confirmation-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="fw-bold mt-3" style="color: #0d6efd;">Order Confirmed!</h2>
+            <p class="lead">Your coaching plan has been confirmed.</p>
+            <p class="text-muted">A confirmation email has been sent to your email address.</p>
+            <p class="text-muted small">You will receive further details about your coaching plan shortly.</p>
+            <div class="mt-4">
+                <a href="{% url 'home' %}" class="btn btn-primary" style="background: #0d6efd; border: none; padding: 12px 40px; border-radius: 10px; font-weight: 600;">
+                    <i class="fas fa-home me-2"></i>Return Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ====== GET DATA FROM DJANGO JSON SCRIPTS ======
+const planData = JSON.parse(document.getElementById('plan-data').textContent);
+const userData = JSON.parse(document.getElementById('user-data').textContent);
+const initialData = JSON.parse(document.getElementById('initial-data').textContent);
+
+// ====== POPULATE PLAN SUMMARY ======
+document.getElementById('planSummary').innerHTML = `
+    <h5 class="fw-bold mb-1">${planData.name}</h5>
+    <p class="fw-bold mb-0" style="color: #0d6efd;">$${planData.price} / month</p>
+`;
+
+// ====== HELPER ======
+function getCSRFToken() {
+    const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+    return cookie ? cookie.split('=')[1] : '';
+}
+
+function goToStep(step) {
+    document.querySelectorAll('.checkout-step').forEach(el => el.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
+    document.querySelectorAll('.progress-step').forEach(el => {
+        const s = parseInt(el.dataset.step);
+        el.classList.remove('active', 'completed');
+        if (s === step) el.classList.add('active');
+        else if (s < step) el.classList.add('completed');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ====== CONFIRM ORDER ======
+document.getElementById('confirmOrderBtn').addEventListener('click', function() {
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const btn = this;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Placing Order...';
+    btn.disabled = true;
+
+    // Use profile data from initial_data (or fallback to userData)
+    const address = initialData.address_line1 || '';
+    const city = initialData.city || '';
+    const phone = initialData.phone || '';
+
+    const orderPayload = {
+        plan_id: planData.id,
+        first_name: userData.first_name || '',
+        last_name: userData.last_name || '',
+        email: userData.email || '',
+        phone: phone,
+        address: address,
+        city: city,
+        notes: '',
+        is_guest: false,
+        payment_method: paymentMethod,
+        delivery_method: 'home',  // default, you can change if needed
+    };
+
+    fetch('/api/orders/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+        body: JSON.stringify(orderPayload)
+    })
+    .then(res => {
+        if (!res.ok) return res.json().then(err => { throw new Error(JSON.stringify(err)); });
+        return res.json();
+    })
+    .then(() => {
+        goToStep(2);
+    })
+    .catch(err => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        let errorMsg = 'There was a problem placing your order.';
+        try {
+            const data = JSON.parse(err.message);
+            if (data.errors) errorMsg = Object.values(data.errors).flat().join(' ');
+            else if (data.error) errorMsg = data.error;
+        } catch {}
+        alert(errorMsg);
+    });
+});
+</script>
+{% endblock %}

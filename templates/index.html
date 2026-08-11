@@ -1,0 +1,591 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Magdi's Gym - Unlock Your Potential{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ====== HERO ====== */
+    #hero-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 80px 0;
+    }
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: #1a1a1a;
+    }
+    .hero-title span {
+        color: #0d6efd;
+    }
+    .hero-image {
+        border-radius: 50%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        max-width: 400px;
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+    }
+
+    /* ====== TRANSFORMATIONS ====== */
+    #transformations-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+    .transformation-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+    }
+    .transformation-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    }
+    .transformation-card img {
+        height: 220px;
+        width: 100%;
+        object-fit: cover;
+    }
+    .before-after-label {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* ====== PRICING / BUNDLES ====== */
+    #bundles-section {
+        padding: 80px 0;
+        background: white;
+    }
+    .pricing-card {
+        border: 2px solid #e9ecef;
+        border-radius: 16px;
+        padding: 30px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    .pricing-card:hover {
+        border-color: #0d6efd;
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(13,110,253,0.1);
+    }
+    .pricing-card.featured {
+        border-color: #0d6efd;
+        background: #f0f7ff;
+    }
+    .pricing-card .price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #0d6efd;
+    }
+    .pricing-card .price span {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+    .pricing-card ul {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+        margin: 20px 0;
+    }
+    .pricing-card ul li {
+        padding: 6px 0;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    .pricing-card ul li:last-child {
+        border-bottom: none;
+    }
+    .pricing-card ul li i {
+        color: #0d6efd;
+        margin-right: 10px;
+    }
+
+    /* ====== REVIEWS ====== */
+    #reviews-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+    .review-card {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    .review-card .stars {
+        color: #f59e0b;
+    }
+    .review-card .review-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #0d6efd;
+    }
+
+    /* ====== ABOUT ====== */
+    #about-section {
+        padding: 80px 0;
+        background: white;
+    }
+    .about-img {
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+    }
+
+    /* ====== CONTACT ====== */
+    #contact-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+    .contact-icon {
+        font-size: 2rem;
+        color: #0d6efd;
+    }
+
+    /* ====== ANIMATIONS ====== */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease;
+    }
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* ====== MODAL OVERRIDES ====== */
+    .modal-content {
+        border-radius: 16px;
+        border: none;
+    }
+    .modal-header {
+        border-bottom: 2px solid #0d6efd;
+    }
+    .modal-footer {
+        border-top: none;
+    }
+
+    /* ====== STORY MODAL ====== */
+    .story-modal-img {
+        width: 100%;
+        max-height: 450px;
+        object-fit: contain;
+        border-radius: 12px;
+        background: #f8f9fa;
+    }
+    .story-content {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: #444;
+    }
+    .story-content strong {
+        color: #0d6efd;
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+        .hero-image {
+            max-width: 250px;
+            height: 250px;
+        }
+        .pricing-card {
+            margin-bottom: 20px;
+        }
+        .story-modal-img {
+            max-height: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ====== HERO ====== -->
+<section id="hero-section" class="fade-in">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <h1 class="hero-title">Unlock Your <span>Potential</span> with Magdi</h1>
+                <p class="lead text-muted">Personalized training, nutrition coaching, and mindset transformation. Achieve the body and life you deserve.</p>
+                <a href="#bundles-section" class="btn btn-primary btn-lg px-5 py-3 mt-3">Explore Coaching Bundles</a>
+            </div>
+            <div class="col-md-6 text-center mt-4 mt-md-0">
+                <img src="{% static 'Magdisgym pic/hero image.png' %}?v=2" alt="Magdi the Gym Coach" class="hero-image">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== TRANSFORMATIONS ====== -->
+<section id="transformations-section" class="fade-in">
+    <div class="container">
+        <h2 class="text-center mb-3 fw-bold">Client Transformations</h2>
+        <p class="text-center text-muted mb-5">Real results from real clients who trusted the process.</p>
+        <div class="row g-4">
+            <!-- Sarah -->
+            <div class="col-md-4">
+                <div class="transformation-card position-relative">
+                    <div class="position-relative">
+                        <img src="{% static 'Magdisgym pic/Transformation-1-Sarah.png' %}?v=2" alt="Sarah Before" class="w-100">
+                        <span class="before-after-label">Before</span>
+                    </div>
+                    <div class="p-3">
+                        <h5 class="fw-bold">Sarah's Journey</h5>
+                        <p class="text-muted small">"Magdi helped me lose 20 pounds and completely transform my confidence."</p>
+                        <button class="btn btn-outline-primary btn-sm view-story-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#storyModal"
+                                data-name="Sarah"
+                                data-image="{% static 'Magdisgym pic/Transformation-1-Sarah.png' %}?v=2"
+                                data-story="Sarah came to me feeling stuck and unhappy with her body. After years of yo-yo dieting, she was ready for a real change. We started with small, sustainable habits – better nutrition choices, consistent workouts, and mindset shifts. Within 3 months, Sarah lost 20 pounds, gained incredible strength, and most importantly, found her confidence again. She now inspires others with her journey and continues to crush her fitness goals every day.">
+                            View Story
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Mark -->
+            <div class="col-md-4">
+                <div class="transformation-card position-relative">
+                    <div class="position-relative">
+                        <img src="{% static 'Magdisgym pic/Transformation-2-Mark.png' %}?v=2" alt="Mark Before" class="w-100">
+                        <span class="before-after-label">Before</span>
+                    </div>
+                    <div class="p-3">
+                        <h5 class="fw-bold">Mark's Transformation</h5>
+                        <p class="text-muted small">"I went from struggling to deadlift 100kg to 200kg in just 6 months."</p>
+                        <button class="btn btn-outline-primary btn-sm view-story-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#storyModal"
+                                data-name="Mark"
+                                data-image="{% static 'Magdisgym pic/Transformation-2-Mark.png' %}?v=2"
+                                data-story="Mark was a classic case of 'all work, no results.' He spent hours in the gym but wasn't seeing the gains he wanted. His form was off, his nutrition was lacking, and his confidence was fading. We reworked his entire approach – focused on proper technique, progressive overload, and a high-protein nutrition plan. In just 6 months, Mark went from struggling with 100kg to confidently deadlifting 200kg. He now leads our advanced lifting sessions and is a true inspiration to others.">
+                            View Story
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Emily -->
+            <div class="col-md-4">
+                <div class="transformation-card position-relative">
+                    <div class="position-relative">
+                        <img src="{% static 'Magdisgym pic/Transformation-3-Emily.png' %}?v=2" alt="Emily Before" class="w-100">
+                        <span class="before-after-label">Before</span>
+                    </div>
+                    <div class="p-3">
+                        <h5 class="fw-bold">Emily's Story</h5>
+                        <p class="text-muted small">"Magdi's coaching helped me build sustainable habits and feel amazing."</p>
+                        <button class="btn btn-outline-primary btn-sm view-story-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#storyModal"
+                                data-name="Emily"
+                                data-image="{% static 'Magdisgym pic/Transformation-3-Emily.png' %}?v=2"
+                                data-story="Emily had tried every diet and fitness trend out there, but nothing stuck. She came to me feeling defeated and disconnected from her body. We focused on building a healthy relationship with food, finding joy in movement, and creating a routine that fit her busy lifestyle. Over 4 months, Emily transformed not just her body, but her entire outlook on health. She now maintains her results effortlessly and inspires other women to embrace their journey.">
+                            View Story
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== STORY MODAL ====== -->
+<div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="storyModalLabel">Transformation Story</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h4 id="storyName" class="fw-bold text-primary"></h4>
+                <img id="storyImage" src="" alt="Transformation" class="story-modal-img mt-2 mb-3">
+                <p id="storyText" class="story-content"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- FIXED: Button that closes modal AND scrolls to contact -->
+                <button type="button" class="btn btn-primary" id="contactStoryBtn">
+                    <i class="fas fa-phone me-2"></i>Contact Magdi for Your Story
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== BUNDLES / PRICING ====== -->
+<section id="bundles-section" class="fade-in">
+    <div class="container">
+        <h2 class="text-center mb-3 fw-bold">Coaching Bundles</h2>
+        <p class="text-center text-muted mb-5">Choose the plan that fits your goals and start your transformation today.</p>
+        <div class="row g-4">
+            {% for plan in plans %}
+            <div class="col-md-4">
+                <div class="pricing-card {% if plan.is_featured %}featured{% endif %}">
+                    {% if plan.is_featured %}
+                    <span class="badge bg-primary mb-3">Most Popular</span>
+                    {% endif %}
+                    <h4 class="fw-bold">{{ plan.name }}</h4>
+                    <div class="price">${{ plan.price }} <span>/month</span></div>
+                    <ul>
+                        {% for feature in plan.features %}
+                        <li><i class="fas fa-check-circle"></i> {{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button class="btn btn-primary w-100 py-2 fw-bold choose-plan-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#planModal"
+                            data-plan-id="{{ plan.id }}"
+                            data-plan-name="{{ plan.name }}"
+                            data-plan-description="{{ plan.description|default:'No description available.' }}"
+                            data-plan-price="{{ plan.price }}"
+                            data-plan-features="{{ plan.features|join:'||' }}">
+                        Choose Plan
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted w-100">No plans available yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ====== PLAN MODAL ====== -->
+<div class="modal fade" id="planModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="planModalLabel">Plan Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h4 id="modalPlanName" class="fw-bold"></h4>
+                <p id="modalPlanDescription" class="text-muted"></p>
+                <p class="fs-3 fw-bold text-primary" id="modalPlanPrice"></p>
+                <hr>
+                <h6>Features:</h6>
+                <ul id="modalPlanFeatures" class="list-unstyled">
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" id="modalProceedBtn" class="btn btn-primary">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== REVIEWS ====== -->
+<section id="reviews-section" class="fade-in">
+    <div class="container">
+        <h2 class="text-center mb-3 fw-bold">What Our Clients Say</h2>
+        <p class="text-center text-muted mb-5">Real words from real people who achieved real results.</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="review-card">
+                    <div class="stars mb-2">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-muted">"Magdi's coaching completely changed my approach to fitness. I've never felt stronger or more confident."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="{% static 'Magdisgym pic/Review Profile-1-John Smith.png' %}?v=2" alt="John Smith" class="review-img">
+                        <div class="ms-3">
+                            <h6 class="mb-0 fw-bold">John Smith</h6>
+                            <small class="text-muted">Client since 2024</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="review-card">
+                    <div class="stars mb-2">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-muted">"The nutrition guidance and workout plans are tailored perfectly to my lifestyle. Highly recommend!"</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="{% static 'Magdisgym pic/Review Profile-2-Jane Doe.png' %}?v=2" alt="Jane Doe" class="review-img">
+                        <div class="ms-3">
+                            <h6 class="mb-0 fw-bold">Jane Doe</h6>
+                            <small class="text-muted">Client since 2025</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="review-card">
+                    <div class="stars mb-2">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-muted">"I've tried many trainers, but Magdi's holistic approach to mind and body is unmatched."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <img src="{% static 'Magdisgym pic/Review Profile-3-Emily White.png' %}?v=2" alt="Emily White" class="review-img">
+                        <div class="ms-3">
+                            <h6 class="mb-0 fw-bold">Emily White</h6>
+                            <small class="text-muted">Client since 2024</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== ABOUT ====== -->
+<section id="about-section" class="fade-in">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold">About Magdi's Coaching</h2>
+                <p class="text-muted">Magdi is a certified personal trainer and nutrition coach with over 10 years of experience helping clients transform their lives.</p>
+                <p class="text-muted">His approach combines science-based training, personalized nutrition, and mindset coaching to deliver lasting results.</p>
+                <ul class="list-unstyled text-muted">
+                    <li><i class="fas fa-check-circle text-primary me-2"></i> Certified Personal Trainer</li>
+                    <li><i class="fas fa-check-circle text-primary me-2"></i> Sports Nutrition Specialist</li>
+                    <li><i class="fas fa-check-circle text-primary me-2"></i> 10+ Years of Experience</li>
+                    <li><i class="fas fa-check-circle text-primary me-2"></i> 500+ Transformations</li>
+                </ul>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="{% static 'Magdisgym pic/Bottom About Section.png' %}?v=2" alt="Magdi Coaching" class="about-img">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== CONTACT ====== -->
+<section id="contact-section" class="fade-in">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-12">
+                <h2 class="fw-bold mb-3">Get in Touch</h2>
+                <p class="text-muted mb-5">Ready to start your transformation? Reach out to Magdi today.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                <h6 class="mt-2">Email</h6>
+                <p class="text-muted"><a href="mailto:magdi@magdisgym.com" class="text-decoration-none">magdi@magdisgym.com</a></p>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                <h6 class="mt-2">Phone</h6>
+                <p class="text-muted"><a href="tel:+1234567890" class="text-decoration-none">+1 (234) 567-890</a></p>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <h6 class="mt-2">Location</h6>
+                <p class="text-muted">Cairo, Egypt</p>
+            </div>
+            <div class="col-12 mt-4">
+                <a href="mailto:magdi@magdisgym.com" class="btn btn-primary btn-lg px-5">Contact Magdi</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== SCRIPTS ====== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fade-in animations
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+    fadeElements.forEach(el => observer.observe(el));
+
+    // Plan Modal population
+    const planModal = document.getElementById('planModal');
+    planModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const planId = button.getAttribute('data-plan-id');
+        const planName = button.getAttribute('data-plan-name');
+        const planDescription = button.getAttribute('data-plan-description');
+        const planPrice = button.getAttribute('data-plan-price');
+        const featuresRaw = button.getAttribute('data-plan-features');
+        const features = featuresRaw ? featuresRaw.split('||') : [];
+
+        document.getElementById('modalPlanName').textContent = planName;
+        document.getElementById('modalPlanDescription').textContent = planDescription;
+        document.getElementById('modalPlanPrice').textContent = '$' + planPrice + ' / month';
+
+        const featuresList = document.getElementById('modalPlanFeatures');
+        featuresList.innerHTML = '';
+        features.forEach(feature => {
+            const li = document.createElement('li');
+            li.innerHTML = '<i class="fas fa-check-circle text-primary me-2"></i> ' + feature;
+            featuresList.appendChild(li);
+        });
+
+        const proceedBtn = document.getElementById('modalProceedBtn');
+        proceedBtn.href = "{% url 'checkout' %}?plan_id=" + planId;
+    });
+
+    // Story Modal population
+    const storyModal = document.getElementById('storyModal');
+    storyModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const name = button.getAttribute('data-name');
+        const image = button.getAttribute('data-image');
+        const story = button.getAttribute('data-story');
+
+        document.getElementById('storyName').textContent = name + "'s Transformation Story";
+        document.getElementById('storyImage').src = image;
+        document.getElementById('storyText').textContent = story;
+    });
+
+    // ====== FIX: Contact button closes modal AND scrolls to contact ======
+    const contactStoryBtn = document.getElementById('contactStoryBtn');
+    if (contactStoryBtn) {
+        contactStoryBtn.addEventListener('click', function() {
+            // Get the modal instance and hide it
+            const modalEl = document.getElementById('storyModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
+            } else {
+                // Fallback: use jQuery if Bootstrap instance not found
+                $('#storyModal').modal('hide');
+            }
+
+            // After modal hides, scroll to contact section
+            setTimeout(function() {
+                const contactSection = document.getElementById('contact-section');
+                if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 200); // delay to allow modal to finish hiding
+        });
+    }
+});
+
+function logoutUser() {
+    fetch('/logout/', { method: 'POST' })
+        .finally(() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('refresh');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+}
+</script>
+
+{% endblock %}
